@@ -1,0 +1,709 @@
+<!-- Begin Comprehensive Numerology Report Generator Code -->
+
+<!-- Include jsPDF Library from CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+/* Comprehensive Numerology Report Generator Styles */
+
+#numerology-container {
+  font-family: 'Montserrat', sans-serif;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+#numerology-form {
+  background-color: #f9f9f9;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#numerology-form h2 {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+#numerology-form input,
+#numerology-form select {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0 20px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#numerology-form button {
+  width: 100%;
+  background-color: #FFC107;
+  color: white;
+  padding: 14px 20px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+#numerology-form button:hover {
+  background-color: #e0a800;
+}
+
+#loading-spinner {
+  display: none;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.spinner {
+  border: 8px solid #f3f3f3; /* Light grey */
+  border-top: 8px solid #FFC107; /* Yellow */
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 2s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+#report-section {
+  display: none;
+  margin-top: 40px;
+}
+
+#report-section h2 {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.report-card {
+  background-color: #fff;
+  padding: 20px 25px;
+  margin-bottom: 20px;
+  border-left: 5px solid #FFC107;
+  border-radius: 5px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.report-card h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.report-card p {
+  color: #555;
+  line-height: 1.6;
+}
+
+#download-btn {
+  display: block;
+  width: 100%;
+  background-color: #FFD700;
+  color: #000;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 18px;
+  text-align: center;
+  margin-top: 30px;
+}
+
+#download-btn:hover {
+  background-color: #e6c200;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  #numerology-container {
+    padding: 15px;
+  }
+  
+  #numerology-form button,
+  #download-btn {
+    font-size: 16px;
+  }
+}
+</style>
+
+<div id="numerology-container">
+  <!-- User Input Form -->
+  <form id="numerology-form">
+    <h2>Get Your Comprehensive Numerology Report</h2>
+    
+    <label for="fullName">Full Name:</label>
+    <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" required>
+    
+    <label for="birthDate">Birth Date:</label>
+    <input type="date" id="birthDate" name="birthDate" required>
+    
+    <!-- Additional Inputs (Optional) -->
+    <!-- You can add more fields here if needed for further calculations -->
+    
+    <button type="submit">Generate Report</button>
+    
+    <!-- Loading Spinner -->
+    <div id="loading-spinner">
+      <div class="spinner"></div>
+      <p>Generating your report...</p>
+    </div>
+  </form>
+  
+  <!-- Numerology Report Section -->
+  <div id="report-section">
+    <h2>Your Detailed Numerology Report</h2>
+    
+    <!-- Life Path Number -->
+    <div class="report-card" id="lifePathNumber">
+      <h3>Life Path Number: <span id="lifePathValue"></span></h3>
+      <p id="lifePathDescription"></p>
+    </div>
+    
+    <!-- Destiny (Expression) Number -->
+    <div class="report-card" id="destinyNumber">
+      <h3>Destiny (Expression) Number: <span id="destinyValue"></span></h3>
+      <p id="destinyDescription"></p>
+    </div>
+    
+    <!-- Soul Urge Number -->
+    <div class="report-card" id="soulUrgeNumber">
+      <h3>Soul Urge Number: <span id="soulUrgeValue"></span></h3>
+      <p id="soulUrgeDescription"></p>
+    </div>
+    
+    <!-- Personality Number -->
+    <div class="report-card" id="personalityNumber">
+      <h3>Personality Number: <span id="personalityValue"></span></h3>
+      <p id="personalityDescription"></p>
+    </div>
+    
+    <!-- Balance Number -->
+    <div class="report-card" id="balanceNumber">
+      <h3>Balance Number: <span id="balanceValue"></span></h3>
+      <p id="balanceDescription"></p>
+    </div>
+    
+    <!-- Maturity Number -->
+    <div class="report-card" id="maturityNumber">
+      <h3>Maturity Number: <span id="maturityValue"></span></h3>
+      <p id="maturityDescription"></p>
+    </div>
+    
+    <!-- Karmic Debt Numbers -->
+    <div class="report-card" id="karmicDebtNumber">
+      <h3>Karmic Debt Number: <span id="karmicDebtValue"></span></h3>
+      <p id="karmicDebtDescription"></p>
+    </div>
+    
+    <!-- Attitude Number -->
+    <div class="report-card" id="attitudeNumber">
+      <h3>Attitude Number: <span id="attitudeValue"></span></h3>
+      <p id="attitudeDescription"></p>
+    </div>
+    
+    <!-- Birthday Number -->
+    <div class="report-card" id="birthdayNumber">
+      <h3>Birthday Number: <span id="birthdayValue"></span></h3>
+      <p id="birthdayDescription"></p>
+    </div>
+    
+    <!-- Current Name Number -->
+    <div class="report-card" id="currentNameNumber">
+      <h3>Current Name Number: <span id="currentNameValue"></span></h3>
+      <p id="currentNameDescription"></p>
+    </div>
+    
+    <!-- Current Destiny Number -->
+    <div class="report-card" id="currentDestinyNumber">
+      <h3>Current Destiny Number: <span id="currentDestinyValue"></span></h3>
+      <p id="currentDestinyDescription"></p>
+    </div>
+    
+    <!-- Personal Year Number -->
+    <div class="report-card" id="personalYearNumber">
+      <h3>Personal Year Number: <span id="personalYearValue"></span></h3>
+      <p id="personalYearDescription"></p>
+    </div>
+    
+    <!-- Add more report cards as needed for additional numerology numbers -->
+    
+    <!-- Download PDF Button -->
+    <button id="download-btn">Download Report as PDF</button>
+  </div>
+</div>
+
+<script>
+// Comprehensive Numerology Report Generator Script
+
+// Wait for the DOM to load
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('numerology-form');
+  const loadingSpinner = document.getElementById('loading-spinner');
+  const reportSection = document.getElementById('report-section');
+  
+  form.addEventListener('submit', function(event) {
+    event.preventDefault();
+    
+    // Show loading spinner
+    loadingSpinner.style.display = 'block';
+    
+    // Hide report section in case it's already visible
+    reportSection.style.display = 'none';
+    
+    // Simulate processing delay (2-3 seconds)
+    setTimeout(function() {
+      // Get user input
+      const fullName = document.getElementById('fullName').value.trim();
+      const birthDate = document.getElementById('birthDate').value;
+      
+      if (fullName && birthDate) {
+        // Calculate Numerology Numbers
+        const lifePathNumber = calculateLifePathNumber(birthDate);
+        const destinyNumber = calculateDestinyNumber(fullName);
+        const soulUrgeNumber = calculateSoulUrgeNumber(fullName);
+        const personalityNumber = calculatePersonalityNumber(fullName);
+        const balanceNumber = calculateBalanceNumber(fullName);
+        const maturityNumber = calculateMaturityNumber(lifePathNumber, destinyNumber);
+        const karmicDebtNumber = calculateKarmicDebtNumber(fullName);
+        const attitudeNumber = calculateAttitudeNumber(lifePathNumber);
+        const birthdayNumber = calculateBirthdayNumber(birthDate);
+        const currentNameNumber = calculateCurrentNameNumber(fullName);
+        const currentDestinyNumber = calculateCurrentDestinyNumber(destinyNumber);
+        const personalYearNumber = calculatePersonalYearNumber(birthDate);
+        
+        // Populate Report
+        populateReport({
+          lifePathNumber,
+          destinyNumber,
+          soulUrgeNumber,
+          personalityNumber,
+          balanceNumber,
+          maturityNumber,
+          karmicDebtNumber,
+          attitudeNumber,
+          birthdayNumber,
+          currentNameNumber,
+          currentDestinyNumber,
+          personalYearNumber
+        });
+        
+        // Hide loading spinner
+        loadingSpinner.style.display = 'none';
+        
+        // Show report section
+        reportSection.style.display = 'block';
+      }
+    }, 2500); // 2.5 seconds delay
+  });
+  
+  // Download PDF Functionality
+  document.getElementById('download-btn').addEventListener('click', function() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // Title
+    doc.setFontSize(22);
+    doc.text("Comprehensive Numerology Report", 105, 20, null, null, 'center');
+    
+    let yOffset = 30;
+    
+    // Helper function to add sections
+    function addSection(title, content) {
+      doc.setFontSize(16);
+      doc.setTextColor(0, 0, 0);
+      doc.text(title, 20, yOffset);
+      yOffset += 10;
+      doc.setFontSize(12);
+      const splitContent = doc.splitTextToSize(content, 170);
+      doc.text(splitContent, 20, yOffset);
+      yOffset += splitContent.length * 7 + 5;
+    }
+    
+    // Gather all report data
+    const reportData = {
+      "Life Path Number": document.getElementById('lifePathValue').innerText + "\n" + document.getElementById('lifePathDescription').innerText,
+      "Destiny (Expression) Number": document.getElementById('destinyValue').innerText + "\n" + document.getElementById('destinyDescription').innerText,
+      "Soul Urge Number": document.getElementById('soulUrgeValue').innerText + "\n" + document.getElementById('soulUrgeDescription').innerText,
+      "Personality Number": document.getElementById('personalityValue').innerText + "\n" + document.getElementById('personalityDescription').innerText,
+      "Balance Number": document.getElementById('balanceValue').innerText + "\n" + document.getElementById('balanceDescription').innerText,
+      "Maturity Number": document.getElementById('maturityValue').innerText + "\n" + document.getElementById('maturityDescription').innerText,
+      "Karmic Debt Number": document.getElementById('karmicDebtValue').innerText + "\n" + document.getElementById('karmicDebtDescription').innerText,
+      "Attitude Number": document.getElementById('attitudeValue').innerText + "\n" + document.getElementById('attitudeDescription').innerText,
+      "Birthday Number": document.getElementById('birthdayValue').innerText + "\n" + document.getElementById('birthdayDescription').innerText,
+      "Current Name Number": document.getElementById('currentNameValue').innerText + "\n" + document.getElementById('currentNameDescription').innerText,
+      "Current Destiny Number": document.getElementById('currentDestinyValue').innerText + "\n" + document.getElementById('currentDestinyDescription').innerText,
+      "Personal Year Number": document.getElementById('personalYearValue').innerText + "\n" + document.getElementById('personalYearDescription').innerText
+    };
+    
+    // Add all sections to PDF
+    for (const [title, content] of Object.entries(reportData)) {
+      addSection(title, content);
+    }
+    
+    // Save PDF
+    doc.save('Comprehensive_Numerology_Report.pdf');
+  });
+});
+
+// Numerology Calculation Functions
+
+// Calculate Life Path Number
+function calculateLifePathNumber(birthDate) {
+  // Format: YYYY-MM-DD
+  const digits = birthDate.replace(/-/g, '');
+  let sum = digits.split('').reduce((acc, num) => acc + parseInt(num), 0);
+  return reduceToSingleDigit(sum);
+}
+
+// Calculate Destiny (Expression) Number
+function calculateDestinyNumber(fullName) {
+  const letters = fullName.replace(/\s+/g, '').toUpperCase().split('');
+  let sum = letters.reduce((acc, letter) => acc + getNumerologyValue(letter), 0);
+  return reduceToSingleDigit(sum);
+}
+
+// Calculate Soul Urge Number (Vowels in name)
+function calculateSoulUrgeNumber(fullName) {
+  const vowels = ['A', 'E', 'I', 'O', 'U'];
+  const letters = fullName.toUpperCase().split('');
+  let sum = letters.reduce((acc, letter) => {
+    if (vowels.includes(letter)) {
+      return acc + getNumerologyValue(letter);
+    }
+    return acc;
+  }, 0);
+  return reduceToSingleDigit(sum);
+}
+
+// Calculate Personality Number (Consonants in name)
+function calculatePersonalityNumber(fullName) {
+  const vowels = ['A', 'E', 'I', 'O', 'U'];
+  const letters = fullName.toUpperCase().split('');
+  let sum = letters.reduce((acc, letter) => {
+    if (!vowels.includes(letter) && /[A-Z]/.test(letter)) {
+      return acc + getNumerologyValue(letter);
+    }
+    return acc;
+  }, 0);
+  return reduceToSingleDigit(sum);
+}
+
+// Calculate Balance Number
+function calculateBalanceNumber(fullName) {
+  const letters = fullName.replace(/\s+/g, '').toUpperCase().split('');
+  const totalLetters = letters.length;
+  const sum = letters.reduce((acc, letter) => acc + getNumerologyValue(letter), 0);
+  const average = sum / totalLetters;
+  return average.toFixed(2);
+}
+
+// Calculate Maturity Number
+function calculateMaturityNumber(lifePathNumber, destinyNumber) {
+  const sum = lifePathNumber + destinyNumber;
+  return reduceToSingleDigit(sum);
+}
+
+// Calculate Karmic Debt Number
+function calculateKarmicDebtNumber(fullName) {
+  // Simplified method: checking for missing numbers in name
+  const requiredNumbers = [13, 14, 16, 19];
+  const letters = fullName.toUpperCase().split('');
+  const presentNumbers = letters.map(letter => getNumerologyValue(letter));
+  const missingNumbers = requiredNumbers.filter(num => !presentNumbers.includes(num));
+  return missingNumbers.length > 0 ? missingNumbers.join(', ') : 'None';
+}
+
+// Calculate Attitude Number
+function calculateAttitudeNumber(lifePathNumber) {
+  // Example formula: Life Path Number divided by 2 (simplified)
+  let attitude = lifePathNumber / 2;
+  attitude = attitude > 9 ? reduceToSingleDigit(attitude) : attitude;
+  return attitude.toFixed(1);
+}
+
+// Calculate Birthday Number
+function calculateBirthdayNumber(birthDate) {
+  // Day of birth
+  const day = parseInt(birthDate.split('-')[2]);
+  return day;
+}
+
+// Calculate Current Name Number
+function calculateCurrentNameNumber(fullName) {
+  // Assuming current name is the full name entered
+  return calculateDestinyNumber(fullName);
+}
+
+// Calculate Current Destiny Number
+function calculateCurrentDestinyNumber(destinyNumber) {
+  // Assuming current destiny number is the destiny number
+  return destinyNumber;
+}
+
+// Calculate Personal Year Number
+function calculatePersonalYearNumber(birthDate) {
+  const currentYear = new Date().getFullYear();
+  const birthYear = parseInt(birthDate.split('-')[0]);
+  const personalYear = reduceToSingleDigit(currentYear - birthYear);
+  return personalYear;
+}
+
+// Helper Functions
+
+// Get Numerology Value for a Letter (Pythagorean Numerology)
+function getNumerologyValue(letter) {
+  const numerologyChart = {
+    A:1, B:2, C:3, D:4, E:5, F:6, G:7, H:8, I:9,
+    J:1, K:2, L:3, M:4, N:5, O:6, P:7, Q:8, R:9,
+    S:1, T:2, U:3, V:4, W:5, X:6, Y:7, Z:8
+  };
+  return numerologyChart[letter] || 0;
+}
+
+// Reduce to Single Digit (excluding master numbers 11, 22, 33)
+function reduceToSingleDigit(number) {
+  while (number > 9 && number !== 11 && number !== 22 && number !== 33) {
+    number = number.toString().split('').reduce((acc, num) => acc + parseInt(num), 0);
+  }
+  return number;
+}
+
+// Populate Report Function
+function populateReport(numbers) {
+  // Life Path Number
+  document.getElementById('lifePathValue').innerText = numbers.lifePathNumber;
+  document.getElementById('lifePathDescription').innerText = getLifePathDescription(numbers.lifePathNumber);
+  
+  // Destiny Number
+  document.getElementById('destinyValue').innerText = numbers.destinyNumber;
+  document.getElementById('destinyDescription').innerText = getDestinyDescription(numbers.destinyNumber);
+  
+  // Soul Urge Number
+  document.getElementById('soulUrgeValue').innerText = numbers.soulUrgeNumber;
+  document.getElementById('soulUrgeDescription').innerText = getSoulUrgeDescription(numbers.soulUrgeNumber);
+  
+  // Personality Number
+  document.getElementById('personalityValue').innerText = numbers.personalityNumber;
+  document.getElementById('personalityDescription').innerText = getPersonalityDescription(numbers.personalityNumber);
+  
+  // Balance Number
+  document.getElementById('balanceValue').innerText = numbers.balanceNumber;
+  document.getElementById('balanceDescription').innerText = getBalanceDescription(numbers.balanceNumber);
+  
+  // Maturity Number
+  document.getElementById('maturityValue').innerText = numbers.maturityNumber;
+  document.getElementById('maturityDescription').innerText = getMaturityDescription(numbers.maturityNumber);
+  
+  // Karmic Debt Number
+  document.getElementById('karmicDebtValue').innerText = numbers.karmicDebtNumber;
+  document.getElementById('karmicDebtDescription').innerText = getKarmicDebtDescription(numbers.karmicDebtNumber);
+  
+  // Attitude Number
+  document.getElementById('attitudeValue').innerText = numbers.attitudeNumber;
+  document.getElementById('attitudeDescription').innerText = getAttitudeDescription(numbers.attitudeNumber);
+  
+  // Birthday Number
+  document.getElementById('birthdayValue').innerText = numbers.birthdayNumber;
+  document.getElementById('birthdayDescription').innerText = getBirthdayDescription(numbers.birthdayNumber);
+  
+  // Current Name Number
+  document.getElementById('currentNameValue').innerText = numbers.currentNameNumber;
+  document.getElementById('currentNameDescription').innerText = getCurrentNameDescription(numbers.currentNameNumber);
+  
+  // Current Destiny Number
+  document.getElementById('currentDestinyValue').innerText = numbers.currentDestinyNumber;
+  document.getElementById('currentDestinyDescription').innerText = getCurrentDestinyDescription(numbers.currentDestinyNumber);
+  
+  // Personal Year Number
+  document.getElementById('personalYearValue').innerText = numbers.personalYearNumber;
+  document.getElementById('personalYearDescription').innerText = getPersonalYearDescription(numbers.personalYearNumber);
+}
+
+// Numerology Descriptions
+
+function getLifePathDescription(number) {
+  const descriptions = {
+    1: "Life Path 1 individuals are natural leaders. They are ambitious, independent, and driven to achieve their goals. They thrive in roles that require initiative and innovation.",
+    2: "Life Path 2 people are diplomatic and cooperative. They excel in partnerships and are sensitive to the needs of others, making them excellent mediators and team players.",
+    3: "Life Path 3 individuals are creative and expressive. They have a natural flair for communication, art, and entertainment, and bring joy and positivity wherever they go.",
+    4: "Life Path 4 people are practical and hardworking. They value stability and are dedicated to building solid foundations in their personal and professional lives.",
+    5: "Life Path 5 individuals are adventurous and freedom-loving. They thrive on change and variety, and are always seeking new experiences and opportunities.",
+    6: "Life Path 6 people are nurturing and responsible. They have a strong sense of duty towards their family and community, and excel in roles that involve caregiving and support.",
+    7: "Life Path 7 individuals are introspective and analytical. They have a deep desire for knowledge and spiritual growth, often delving into philosophical and metaphysical subjects.",
+    8: "Life Path 8 people are ambitious and authoritative. They are driven to achieve material success and have strong leadership qualities, making them effective in business and finance.",
+    9: "Life Path 9 individuals are compassionate and humanitarian. They are driven by a desire to help others and make the world a better place through their altruistic actions."
+  };
+  return descriptions[number] || "Your Life Path Number offers unique insights into your life's journey.";
+}
+
+function getDestinyDescription(number) {
+  const descriptions = {
+    1: "Your destiny is to lead and innovate. You are destined for roles that require initiative and originality, guiding others towards new horizons.",
+    2: "Your destiny revolves around partnership and harmony. You are meant to build strong relationships and foster cooperation in all aspects of life.",
+    3: "Your destiny is to inspire and entertain. You have a creative spirit that brings joy and positivity to those around you.",
+    4: "Your destiny is to create stability and order. You are destined to build lasting structures and systems that stand the test of time.",
+    5: "Your destiny is to embrace change and adventure. You are meant to explore new opportunities and lead others in dynamic environments.",
+    6: "Your destiny is to nurture and support. You are destined to create harmonious environments and care for those around you.",
+    7: "Your destiny is to seek truth and wisdom. You are meant to delve into deeper knowledge and share your insights with others.",
+    8: "Your destiny is to achieve great success and influence. You are destined for leadership roles that allow you to impact the world materially and socially.",
+    9: "Your destiny is to serve humanity. You are meant to contribute to the greater good and make a positive difference in the lives of others."
+  };
+  return descriptions[number] || "Your Destiny Number provides guidance on your life's purpose and goals.";
+}
+
+function getSoulUrgeDescription(number) {
+  const descriptions = {
+    1: "Your Soul Urge is to lead and be recognized. You seek independence and the ability to make your own decisions.",
+    2: "Your Soul Urge is to build harmonious relationships. You desire peace and cooperation in your interactions.",
+    3: "Your Soul Urge is to express yourself creatively. You thrive on communication and artistic endeavors.",
+    4: "Your Soul Urge is to create stability and security. You value reliability and practicality.",
+    5: "Your Soul Urge is to experience freedom and adventure. You crave variety and new experiences.",
+    6: "Your Soul Urge is to nurture and care for others. You are deeply concerned with family and community well-being.",
+    7: "Your Soul Urge is to seek knowledge and spiritual understanding. You are driven by a quest for truth.",
+    8: "Your Soul Urge is to achieve success and authority. You are motivated by material and professional accomplishments.",
+    9: "Your Soul Urge is to serve humanity and help others. You are driven by compassion and a desire to make a positive impact."
+  };
+  return descriptions[number] || "Your Soul Urge Number reveals your innermost desires and motivations.";
+}
+
+function getPersonalityDescription(number) {
+  const descriptions = {
+    1: "You appear as confident and ambitious, often taking the lead in situations.",
+    2: "You come across as cooperative and considerate, always seeking balance.",
+    3: "You seem expressive and sociable, with a vibrant and creative personality.",
+    4: "You look dependable and disciplined, projecting a sense of stability.",
+    5: "You appear adventurous and dynamic, always ready for new experiences.",
+    6: "You seem nurturing and responsible, often the caretaker in relationships.",
+    7: "You look thoughtful and introspective, with a keen analytical mind.",
+    8: "You appear authoritative and goal-oriented, exuding power and control.",
+    9: "You seem compassionate and generous, always willing to help others."
+  };
+  return descriptions[number] || "Your Personality Number reflects the outward traits you exhibit to the world.";
+}
+
+function getBalanceDescription(balance) {
+  const descriptions = {
+    1: "Balance Number 1 signifies the importance of individuality and leadership in maintaining personal harmony.",
+    2: "Balance Number 2 emphasizes cooperation and diplomacy as keys to achieving balance in your life.",
+    3: "Balance Number 3 highlights the role of creativity and communication in maintaining equilibrium.",
+    4: "Balance Number 4 underscores the need for structure and discipline to achieve stability.",
+    5: "Balance Number 5 points to the necessity of embracing change and adaptability for personal balance.",
+    6: "Balance Number 6 stresses the significance of nurturing and responsibility in sustaining harmony.",
+    7: "Balance Number 7 reflects the value of introspection and spiritual growth in maintaining balance.",
+    8: "Balance Number 8 signifies the role of ambition and efficiency in achieving personal equilibrium.",
+    9: "Balance Number 9 emphasizes compassion and humanitarian efforts as means to sustain balance."
+  };
+  return descriptions[balance] || "Your Balance Number provides insights into maintaining personal harmony.";
+}
+
+function getMaturityDescription(maturity) {
+  const descriptions = {
+    2: "Maturity Number 2 indicates a continued emphasis on partnerships and cooperation as you grow older.",
+    3: "Maturity Number 3 suggests that creativity and expression will become even more significant in your later years.",
+    4: "Maturity Number 4 highlights the increasing importance of stability and organization as you mature.",
+    5: "Maturity Number 5 points to a growing desire for freedom and adventure in your later life.",
+    6: "Maturity Number 6 signifies an enhanced focus on family and community responsibilities.",
+    7: "Maturity Number 7 reflects a deepening quest for knowledge and spiritual enlightenment as you age.",
+    8: "Maturity Number 8 suggests that leadership and financial success will become more prominent in your later years.",
+    9: "Maturity Number 9 emphasizes a strong inclination towards humanitarian efforts and helping others as you mature."
+  };
+  return descriptions[maturity] || "Your Maturity Number provides insights into your personal growth and development over time.";
+}
+
+function getKarmicDebtDescription(karmicDebt) {
+  if (karmicDebt === 'None') {
+    return "You have no Karmic Debt Numbers. Your path is smooth with no significant past-life lessons to overcome.";
+  }
+  
+  const descriptions = {
+    13: "Karmic Debt 13: You may face challenges related to discipline and responsibility. Learning to manage your resources wisely is crucial.",
+    14: "Karmic Debt 14: Temptations towards freedom and indulgence may lead to instability. Cultivating self-control is essential.",
+    16: "Karmic Debt 16: Past-life karma involves humility and learning to balance ego with service to others.",
+    19: "Karmic Debt 19: Challenges revolve around self-reliance and leadership. Learning to share power and responsibility is key."
+  };
+  return descriptions[karmicDebt] || "Your Karmic Debt Number indicates specific lessons to overcome for personal growth.";
+}
+
+function getAttitudeDescription(attitude) {
+  const descriptions = {
+    1: "Your Attitude Number 1 shows that you approach life with confidence and a desire to lead.",
+    2: "Your Attitude Number 2 indicates that you handle situations with diplomacy and a focus on collaboration.",
+    3: "Your Attitude Number 3 reflects a cheerful and expressive approach to life.",
+    4: "Your Attitude Number 4 signifies a practical and methodical attitude towards achieving goals.",
+    5: "Your Attitude Number 5 shows an adventurous and adaptable demeanor.",
+    6: "Your Attitude Number 6 highlights a nurturing and responsible approach to relationships.",
+    7: "Your Attitude Number 7 indicates a thoughtful and analytical way of handling situations.",
+    8: "Your Attitude Number 8 reflects an ambitious and authoritative stance in your endeavors.",
+    9: "Your Attitude Number 9 shows a compassionate and altruistic approach to life."
+  };
+  return descriptions[attitude] || "Your Attitude Number provides insights into how you approach life's challenges and opportunities.";
+}
+
+function getBirthdayDescription(birthday) {
+  const descriptions = {
+    1: "A Birthday Number 1 signifies leadership qualities and a pioneering spirit.",
+    2: "A Birthday Number 2 indicates sensitivity and a cooperative nature.",
+    3: "A Birthday Number 3 reflects creativity and a joyful disposition.",
+    4: "A Birthday Number 4 signifies a practical and hardworking personality.",
+    5: "A Birthday Number 5 indicates a love for freedom and adventure.",
+    6: "A Birthday Number 6 reflects a nurturing and responsible character.",
+    7: "A Birthday Number 7 signifies introspection and a quest for knowledge.",
+    8: "A Birthday Number 8 indicates ambition and a drive for success.",
+    9: "A Birthday Number 9 reflects compassion and a desire to help others."
+  };
+  return descriptions[birthday] || "Your Birthday Number provides unique insights into your innate talents and traits.";
+}
+
+function getCurrentNameDescription(currentNameNumber) {
+  const descriptions = {
+    1: "Your Current Name Number 1 emphasizes leadership and independence in your current endeavors.",
+    2: "Your Current Name Number 2 highlights cooperation and sensitivity in your interactions.",
+    3: "Your Current Name Number 3 reflects creativity and expressive communication in your activities.",
+    4: "Your Current Name Number 4 signifies a focus on structure and practicality in your projects.",
+    5: "Your Current Name Number 5 indicates adaptability and a desire for new experiences in your life.",
+    6: "Your Current Name Number 6 emphasizes responsibility and nurturing in your relationships.",
+    7: "Your Current Name Number 7 reflects a quest for knowledge and spiritual growth in your pursuits.",
+    8: "Your Current Name Number 8 signifies ambition and a drive for success in your career.",
+    9: "Your Current Name Number 9 indicates compassion and a focus on humanitarian efforts in your activities."
+  };
+  return descriptions[currentNameNumber] || "Your Current Name Number provides insights into your present life focus and goals.";
+}
+
+function getCurrentDestinyDescription(currentDestinyNumber) {
+  const descriptions = {
+    1: "Your Current Destiny Number 1 emphasizes taking initiative and leading new projects.",
+    2: "Your Current Destiny Number 2 highlights the importance of partnerships and collaborative efforts.",
+    3: "Your Current Destiny Number 3 reflects a time for creative expression and joyful activities.",
+    4: "Your Current Destiny Number 4 signifies a focus on building solid foundations and disciplined work.",
+    5: "Your Current Destiny Number 5 indicates a period of change and embracing new opportunities.",
+    6: "Your Current Destiny Number 6 emphasizes nurturing relationships and taking responsibility.",
+    7: "Your Current Destiny Number 7 reflects a time for introspection and seeking deeper truths.",
+    8: "Your Current Destiny Number 8 signifies a focus on achieving financial and professional success.",
+    9: "Your Current Destiny Number 9 indicates a period of generosity and contributing to the greater good."
+  };
+  return descriptions[currentDestinyNumber] || "Your Current Destiny Number provides guidance on your current life's purpose and objectives.";
+}
+
+function getPersonalYearDescription(personalYear) {
+  const descriptions = {
+    1: "Personal Year 1 is a time for new beginnings, taking initiative, and setting fresh goals.",
+    2: "Personal Year 2 emphasizes cooperation, partnerships, and building strong relationships.",
+    3: "Personal Year 3 is a period of creativity, communication, and social activities.",
+    4: "Personal Year 4 focuses on hard work, stability, and creating solid foundations.",
+    5: "Personal Year 5 signifies change, adventure, and embracing new opportunities.",
+    6: "Personal Year 6 emphasizes responsibility, nurturing, and focusing on family and home.",
+    7: "Personal Year 7 is a time for introspection, spiritual growth, and seeking deeper knowledge.",
+    8: "Personal Year 8 focuses on ambition, financial growth, and achieving professional success.",
+    9: "Personal Year 9 signifies completion, letting go of the old, and preparing for new beginnings."
+  };
+  return descriptions[personalYear] || "Your Personal Year Number offers insights into the energies and opportunities you'll encounter this year.";
+}
+</script>
+
+<!-- End Comprehensive Numerology Report Generator Code -->
